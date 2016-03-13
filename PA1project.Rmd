@@ -8,31 +8,31 @@ output: html_document
 # Getting and processing data
 Load library for the project:  
 
-```{r}
+```{r,eval=TRUE}
 library(ggplot2) #to do plots  
 ```
 
 ## 1. Load the data  
 
-```{r}
+```{r,eval=TRUE}
 data.1 <- read.csv("activity.csv")
 ```  
 
 
 ## Clean data, remove NA's
-```{r}
+```{r,eval=TRUE}
 dataf <-na.omit(data.1)
 ```
 
 ## Question 1: Mean number of steps taken per day
 First, we will make a histogrm of the total number of steps taken each day
 
-```{r}
+```{r,eval=TRUE}
 dataf.steps <- aggregate(steps ~ date,dataf,sum)
 hist(dataf.steps$steps, col='darkgreen',main = "Histogram of steps per day",xlab="Total Steps  per day")
 ```
 Now we will find the mean and the median of steps per day
-```{r}
+```{r,eval=TRUE}
 rmean <- mean(dataf.steps$steps)
 rmedian <- median(dataf.steps$steps)
 rmean
@@ -40,34 +40,34 @@ rmedian
 
 ```
 ##Question 2: Calculate the daily activity pattern
-```{r, echo=FALSE}
+```{r, eval=TRUE}
 dataf.averages <- aggregate(x=list(steps=dataf$steps),by=list(interval=dataf$interval),FUN=mean)
 ggplot(data=dataf.averages, aes(x=interval, y= steps)) +geom_line()+xlab("Five minute intervals")+ylab("Average steps")
 ```
 
 
 To determine the five minute interal with the max steps across all days:
-```{r}
+```{r,eval=TRUE}
 maxinterval <- dataf.averages[which.max(dataf.averages$steps),1]
 maxinterval
 ```
 ## Imputing missing values
 We now need to impute data for the missing values (NA) by inserting the average for each interval.
-```{r}
+```{r,eval=TRUE}
 incomplete <- sum(!complete.cases(data.1))
 incomplete
 imputed_values <- transform(data.1, steps=ifelse(is.na(data.1$steps),dataf.averages$steps[match(dataf$interval, dataf.averages$interval)],dataf$steps))
 ```
 Recount the total steps and make histogram:
 
-```{r}
+```{r,eval=TRUE}
 dataf.steps1 <-aggregate(steps ~date,imputed_values,sum)
 hist(dataf.steps1$steps,main = paste("Total steps per day"),col="darkgreen",xlab = "Number of Steps")
 ```
 
 Create a histogram that shows the difference:
 
-```{r}
+```{r,eval=TRUE}
 hist(dataf.steps1$steps,main = paste("Total steps per day"),col="darkgreen",xlab = "Number of Steps")
 hist(dataf.steps$steps,main = paste("Total steps per day"),col="red",xlab="Number of steps", add=T)
 legend("topright",c("Imputed","Non imputed"),col=c("darkgreen","red"),lwd=10)
@@ -75,28 +75,28 @@ legend("topright",c("Imputed","Non imputed"),col=c("darkgreen","red"),lwd=10)
 
 
 Compute mean and median for imputed data:  
-```{r}
+```{r,eval=TRUE}
 mean.i <- mean(dataf.steps1$steps)
 median.i <- median(dataf.steps1$steps)
 mean.i
 median.i
 ```
 Calculate difference - imputed vs. non imputed data:  
-```{r}
+```{r,eval=TRUE
 meandiff <-mean.i - rmean
 mediff <- median.i -  rmedian
 meandiff
 mediff
 ```
 Calculate the total difference:  
-```{r}
+```{r,eval=TRUE}
 difference <- sum(dataf.steps1$steps) - sum(dataf.steps$steps)
 difference
 ```
 
 #Differences in activity patterns between weekends and weekdays
 
-```{r}
+```{r,eval=TRUE}
 weekdays <- c("Monday","Tuesday", "Wednesday","Thursday","Friday")
 imputed_values$dow=as.factor(ifelse(is.element(weekdays(as.Date(imputed_values$date)),weekdays),"weekday","weekend"))
 dataf.steps1 <- aggregate(steps~ interval+dow,imputed_values,mean)
