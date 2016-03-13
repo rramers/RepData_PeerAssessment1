@@ -1,8 +1,8 @@
 ---
-title: "Reproducible Research Project 1"
-author: "Robert Ramers"
-date: "March 11, 2016"
-output: html_document
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
 ---
 
 # Getting and processing data
@@ -58,14 +58,14 @@ incomplete <- sum(!complete.cases(data.1))
 incomplete
 imputed_values <- transform(data.1, steps=ifelse(is.na(data.1$steps),dataf.averages$steps[match(dataf$interval, dataf.averages$interval)],dataf$steps))
 ```
-Recount the total steps and make histogram:
+##Recount the total steps and make histogram:
 
 ```{r,eval=TRUE}
 dataf.steps1 <-aggregate(steps ~date,imputed_values,sum)
 hist(dataf.steps1$steps,main = paste("Total steps per day"),col="darkgreen",xlab = "Number of Steps")
 ```
 
-Create a histogram that shows the difference:
+##Create a histogram that shows the difference:
 
 ```{r,eval=TRUE}
 hist(dataf.steps1$steps,main = paste("Total steps per day"),col="darkgreen",xlab = "Number of Steps")
@@ -74,7 +74,7 @@ legend("topright",c("Imputed","Non imputed"),col=c("darkgreen","red"),lwd=10)
 ```
 
 
-Compute mean and median for imputed data:  
+##Compute mean and median for imputed data:  
 ```{r,eval=TRUE}
 mean.i <- mean(dataf.steps1$steps)
 median.i <- median(dataf.steps1$steps)
@@ -88,7 +88,7 @@ mediff <- median.i -  rmedian
 meandiff
 mediff
 ```
-Calculate the total difference:  
+##Calculate the total difference:  
 ```{r,eval=TRUE}
 difference <- sum(dataf.steps1$steps) - sum(dataf.steps$steps)
 difference
@@ -99,8 +99,9 @@ difference
 ```{r,eval=TRUE}
 weekdays <- c("Monday","Tuesday", "Wednesday","Thursday","Friday")
 imputed_values$dow=as.factor(ifelse(is.element(weekdays(as.Date(imputed_values$date)),weekdays),"weekday","weekend"))
-dataf.steps1 <- aggregate(steps~ interval+dow,imputed_values,mean)
+
+dataf.new <- aggregate(steps~ interval+dow,imputed_values,mean)
 library(lattice)
-xyplot(dataf.steps1$steps ~ dataf.steps1$interval|dataf.steps1$dow,main="Average steps per day by interval",xlab="Interval",ylab="Steps",layout=c(1,2),type="1")
-```
+
+xyplot(dataf.new$steps ~ dataf.new$interval|dataf.new$dow,main="Average steps per day by interval",xlab="Interval",ylab="Steps",layout=c(1,2),type="1")
 
